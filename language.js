@@ -384,6 +384,6 @@ window.console = new Proxy(
                 eval.call(window, compile(code.text()));
             }
         }
-    })());
+    }));
 })()
 

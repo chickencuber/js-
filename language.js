@@ -367,24 +367,23 @@ window.console = new Proxy(
         const doc = $.doc();
         const jspp = doc.all('script[type="js++"]');
         for (const code of jspp) {
+            const n = $.create("script");
             if (code.getProp("src")) {
                 try {
                     const js = await (
                         await fetch(code.getProp("src") + "?cache=" + Date.now())
                     ).text();
-                    code.elt.removeAttribute("src");
-                    code.text(compile(js));
+                    n.text(compile(js));
                 } catch (e) {
                     if (e.message !== "asset does not exist") {
                         console.error(e);
                     }
-                    code.elt.removeAttribute("src");
-                    code.text(compile(code.text()));
+                    n.text(compile(code.text()));
                 }
             } else {
-                code.text(compile(code.text()));
+                n.text(compile(code.text()));
             }
-            code.elt.removeAttribute("type");
+            $.from(code.elt.parentElement).child(n);
         }
     })();
 })()

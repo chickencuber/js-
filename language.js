@@ -362,12 +362,10 @@ window.console = new Proxy(
         });
         return code;
     }
-
-    window.addEventListener("load", (async () => {
+    window.onload = async () => {
         const doc = $.doc();
         const jspp = doc.all('script[type="js++"]');
         for (const code of jspp) {
-            const n = $.create("script");
             if (code.getProp("src")) {
                 try {
                     const js = await (
@@ -384,6 +382,6 @@ window.console = new Proxy(
                 eval.call(window, compile(code.text()));
             }
         }
-    }));
+    };
 })()
 

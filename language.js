@@ -371,15 +371,15 @@ window.console = new Proxy(
                     const js = await (
                         await fetch(code.getProp("src") + "?cache=" + Date.now())
                     ).text();
-                    eval.call(window, compile(js));
+                    (0, eval)(compile(js));
                 } catch (e) {
                     if (e.message !== "asset does not exist") {
                         console.error(e);
                     }
-                    eval.call(window, compile(code.text()));
+                    (0, eval)(compile(code.text()));
                 }
             } else {
-                eval.call(window, compile(code.text()));
+                (0, eval)(compile(code.text()));
             }
         }
     };

@@ -12,14 +12,22 @@
   <body>
       <main></main>
     <script type="js++">
-        function hi() {
-            return () => "hi"
+        alias! fn function;
+        fn add(p) {
+            *p++;
         }
-        @hi
-        function wow() {
-
-        }
-        console.log(wow());
+        let h = 0;
+        console.log(h);
+        add(&h);
+        console.log(h);
+        add(&h);
+        console.log(h);
+        add(&h);
+        console.log(h);
+        add(&h);
+        console.log(h);
+        add(&h);
+        console.log(h);
     </script>
   </body>
 </html>

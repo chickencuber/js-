@@ -170,7 +170,7 @@ window.console = new Proxy(
                         ? raw.trim().slice(0, -1)
                         : raw.trim();
                         const node = this.startNode();
-                        node.rawCode = `const ${name} = ${dname}(${raw}, "class");`;
+                        node.rawCode = `var ${name} = ${dname}(${raw}, "class");`;
                         return this.finishNode(node, "MacroInvocation");
                     }
                     case "FunctionDeclaration": {
@@ -182,7 +182,7 @@ window.console = new Proxy(
                         ? fnraw.trim().slice(0, -1)
                         : fnraw.trim();
                         const node = this.startNode();
-                        node.rawCode = `const ${fname} = ${dname}(${fnraw}, "function");`;
+                        node.rawCode = `var ${fname} = ${dname}(${fnraw}, "function");`;
                         return this.finishNode(node, "MacroInvocation");
                     }
                     default:

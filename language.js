@@ -363,7 +363,7 @@ window.console = new Proxy(
         return code;
     }
 
-    (async () => {
+    window.addEventListener("load", (async () => {
         const doc = $.doc();
         const jspp = doc.all('script[type="js++"]');
         for (const code of jspp) {
@@ -373,18 +373,17 @@ window.console = new Proxy(
                     const js = await (
                         await fetch(code.getProp("src") + "?cache=" + Date.now())
                     ).text();
-                    n.text(compile(js));
+                    eval.call(window, compile(js));
                 } catch (e) {
                     if (e.message !== "asset does not exist") {
                         console.error(e);
                     }
-                    n.text(compile(code.text()));
+                    eval.call(window, compile(code.text()));
                 }
             } else {
-                n.text(compile(code.text()));
+                eval.call(window, compile(code.text()));
             }
-            $.from(code.elt.parentElement).child(n);
         }
-    })();
+    })());
 })()
 

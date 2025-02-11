@@ -28,7 +28,13 @@
         console.log(h);
         add(&h);
         console.log(h);
-        $.body().child($.create("div").text($("html").elt.outerHTML))
+        (async () => {
+            const v = await fetch("./index.html");
+            const t = await v.text();
+            $.body().child($.create("div").text(t).css({
+                "white-space": "pre"
+            }));
+        })()
     </script>
   </body>
 </html>

@@ -12,6 +12,16 @@ class Pointer {
     }
 }
 
+function* range(s, e, inc=1) {
+  if(e === undefined) {
+    e = s;
+    s = 0;
+  }
+  for(let i = s; i < e; i+=inc) {
+    yield i;
+  }
+}
+
 Symbol.display = Symbol("display");
 
 window.console = new Proxy(

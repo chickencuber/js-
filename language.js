@@ -22,6 +22,12 @@ function* range(s, e, inc=1) {
   }
 }
 
+function wait(millis) {
+    return new Promise((r) => {
+        setTimeout(r, millis)
+    })
+}
+
 Symbol.display = Symbol("display");
 
 window.console = new Proxy(

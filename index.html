@@ -14,6 +14,25 @@
     <script type="js++">
         //this is the code that it is running
         alias! fn = function;
+        fn foo(t) {
+            return (...args) => {
+                console.log("foo");
+                return t(...args);
+            }
+        }
+        fn bar(t) {
+            return (...args) => {
+                console.log("bar");
+                return t(...args);
+            }
+        }
+        fn calling(t) {
+            return (...args) => {
+                console.log(`calling function`);
+                return t(...args);
+            }
+        }
+        @(foo, bar, calling)
         fn add(p) {
             *p++;
         }

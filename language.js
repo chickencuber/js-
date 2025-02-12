@@ -28,6 +28,15 @@ function wait(millis) {
     })
 }
 
+function _multiple_decor(...decorators) {
+    return (t, type) => {
+        decorators.reverse().forEach(v => {
+            t = v(t, type); //applies decorators the function
+        });
+        return t;
+    }
+}
+
 Symbol.display = Symbol("display");
 
 window.console = new Proxy(
@@ -208,7 +217,12 @@ window.console = new Proxy(
             parseStatement() {
                 if (this.type === types.decorator) {
                     this.next();
-                    let dname = this.parseExprAtom().name;
+                    let dname;
+                    if(this.type === types.parenL) {
+                        dname = "_multiple_decor"
+                    } else {
+                        dname = this.parseExprAtom().name;
+                    }
                     if(this.type === types.parenL) {
                         dname += `(${this.parseMacroArgs().join(", ")})`;
                     }

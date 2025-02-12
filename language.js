@@ -28,7 +28,7 @@ function wait(millis) {
     })
 }
 
-function _multiple_decor(...decorators) {
+function __multiple_decor(...decorators) {
     return (t, type) => {
         decorators.reverse().forEach(v => {
             t = v(t, type); //applies decorators the function
@@ -219,7 +219,7 @@ window.console = new Proxy(
                     this.next();
                     let dname;
                     if(this.type === types.parenL) {
-                        dname = "_multiple_decor"
+                        dname = "__multiple_decor"
                     } else {
                         dname = this.parseExprAtom().name;
                     }

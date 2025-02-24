@@ -14,6 +14,20 @@
     <script type="js++">
         //this is the code that it is running
         alias! fn = function;
+        macro! normal_macro() {
+            console.log("hi")
+        }
+
+        @proc!
+        fn proc_macro() {
+            return "console.log(\"wow\")"
+        }
+
+        proc_macro!();
+
+
+        normal_macro!();
+
         fn foo(t) {
             return (...args) => {
                 console.log("foo");

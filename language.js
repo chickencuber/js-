@@ -30,7 +30,7 @@ function wait(millis) {
 
 function __multiple_decor(...decorators) {
     return (t, type) => {
-        decorators.reverse().forEach(v => {
+        decorators.forEach(v => {
             t = v(t, type); //applies decorators the function
         });
         return t;
@@ -214,6 +214,25 @@ window.console = new Proxy(
                         this.raise(this.pos, `unexpected type "${type.type}"`)
                 }
             }
+            parseProc(type) {
+                if(type.type !== "FunctionDeclaration") {
+                    this.raise(this.pos, "unexpected type " + type.type);
+                }
+                const code = astring.generate(type, {
+                    generator: GENERATOR,
+                });
+                const v = "(" + (code.endsWith(";") ? code.trim().slice(0, -1) : code.trim()) + ")";
+                macros.set(type.id.name, {
+                    proc: true,
+                    fn: v,
+                });
+                const literal = this.startNode();
+                literal.value = `'defined proc macro "${type.id.name}"'`;
+                literal.raw = literal.value;
+                const node = this.startNode();
+                node.expression = this.finishNode(literal, "Literal");
+                return this.finishNode(node, "ExpressionStatement"); 
+            }
             parseStatement() {
                 if (this.type === types.decorator) {
                     this.next();
@@ -222,6 +241,14 @@ window.console = new Proxy(
                         dname = "__multiple_decor"
                     } else {
                         dname = this.parseExprAtom().name;
+                    }
+                    if(dname === "proc") {
+                        if (this.value !== "!") {
+                            this.raise(this.pos, "you need to add '!' in order to use 'proc' decorator");
+                        }
+                        this.next();
+                        const type = this.parseStatement();
+                        return this.parseProc(type);
                     }
                     if(this.type === types.parenL) {
                         dname += `(${this.parseMacroArgs().join(", ")})`;
@@ -338,26 +365,57 @@ window.console = new Proxy(
                         return this.finishNode(node, "Identifier");
                     }
                     this.next();
-                    const args = this.parseMacroArgs();
-                    if (args.length !== macro.params.length) {
-                        this.raise(
-                            this.pos,
-                            `macro "${name}" expected ${macro.params.length} ${
-                                macro.params.length === 1 ? "arg" : "args"
-                            }, ${args.length} were provided`
-                        );
+                    if(macro.proc) {
+                        const args = this.parseProcArgs(); 
+                        const n = eval(macro.fn)(...args);
+                        const node = this.startNode();
+                        node.rawCode = n;
+                        return this.finishNode(node, "MacroInvocation");
+                    } else {
+                        const args = this.parseMacroArgs();
+                        if (args.length !== macro.params.length) {
+                            this.raise(
+                                this.pos,
+                                `macro "${name}" expected ${macro.params.length} ${
+                                    macro.params.length === 1 ? "arg" : "args"
+                                }, ${args.length} were provided`
+                            );
+                        }
+                        let n = macro.body;
+                        for (const [i, param] of Object.entries(macro.params)) {
+                            const arg = args[i];
+                            n = n.replaceAll(new RegExp("(?<!\\\\)\\$" + param, "gm"), arg);
+                        }
+                        n = n.replaceAll(/\\$/gm, "$");
+                        const node = this.startNode();
+                        node.rawCode = n;
+                        return this.finishNode(node, "MacroInvocation");
                     }
-                    let n = macro.body;
-                    for (const [i, param] of Object.entries(macro.params)) {
-                        const arg = args[i];
-                        n = n.replaceAll(new RegExp("(?<!\\\\)\\$" + param, "gm"), arg);
-                    }
-                    n = n.replaceAll(/\\$/gm, "$");
-                    const node = this.startNode();
-                    node.rawCode = n;
-                    return this.finishNode(node, "MacroInvocation");
                 }
                 return super.parseExprAtom();
+            }
+            parseProcArgs() {
+                const l = types.parenL;
+                const r = types.parenR;
+                this.expect(l);
+                const args = [];
+                let depth = 1;
+                while (depth > 0) {
+                    if (this.type === l) {
+                        depth++;
+                    } else if (this.type === r) {
+                        depth--;
+                    } else if (this.type === types.eof) {
+                        this.unexpected();
+                    } else {
+                        args.push({
+                            type: this.type,
+                            value: this.value,
+                        });
+                    }
+                    this.next();
+                }
+                return args;
             }
         };
     }

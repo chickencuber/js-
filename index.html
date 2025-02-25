@@ -6,7 +6,6 @@
     <script src="https://cdn.jsdelivr.net/gh/chickencuber/jsquery@latest/jsquery.js"></script>
 
     <script src="https://chickencuber.github.io/js-/language.js"></script>
-
     <meta charset="utf-8" />
   </head>
   <body>
@@ -19,11 +18,11 @@
         }
 
         @proc!
-        fn proc_macro() {
-            return "console.log(\"wow\")"
+        fn proc_macro(token) {
+            return `console.log(${token.raw})`
         }
 
-        proc_macro!();
+        proc_macro!("hello");
 
 
         normal_macro!();

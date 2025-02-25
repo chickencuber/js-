@@ -411,6 +411,7 @@ window.console = new Proxy(
                         args.push({
                             type: this.type,
                             value: this.value,
+                            raw: this.input.slice(this.start, this.end),
                         });
                     }
                     this.next();

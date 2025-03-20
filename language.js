@@ -1,30 +1,252 @@
 //extra runtime stuff
 class Pointer {
+    #get;
+    #set;
     constructor(get, set) {
-        this.get = get;
-        this.set = set;
+        this.#get = get;
+        this.#set = set;
     }
     get deref() {
-        return this.get();
+        return this.#get();
     }
     set deref(v) {
-        return this.set(v);
+        return this.#set(v);
     }
 }
 
 function* range(s, e, inc=1) {
-  if(e === undefined) {
-    e = s;
-    s = 0;
-  }
-  for(let i = s; i < e; i+=inc) {
-    yield i;
-  }
+    if(e === undefined) {
+        e = s;
+        s = 0;
+    }
+    for(let i = s; i < e; i+=inc) {
+        yield i;
+    }
 }
 
 function wait(millis) {
     return new Promise((r) => {
         setTimeout(r, millis)
+    })
+}
+
+Object.addAll = function(obj, values) {
+    for(const [k, v] of Object.entries(values)) {
+        obj[k] = v; 
+    } 
+}
+
+Object.overloadables = [
+    //math
+    "+",
+    "-",
+    "*",
+    "/",
+    "%",
+    "**",
+    //bitwise
+    "&",
+    "|",
+    "^",
+    "<<",
+    ">>",
+    ">>>",
+    "~",
+    //logic
+    "&&",
+    "||",
+    "!",
+    //comparision
+    "==",
+    "===",
+    "!=",
+    "!==",
+    "<",
+    ">",
+    "<=",
+    ">=",
+    //assignment
+    "+=",
+    "-=",
+    "*=",
+    "/=",
+    "%=",
+    "**=",
+    "<<=",
+    ">>=",
+    ">>>=",
+    "&=",
+    "^=",
+    "|=",
+    "&&=",
+    "||=",
+    "++",
+    "--",
+];
+
+for(const v of [
+    String,
+    Number,
+    Boolean,
+]) {
+    Object.addAll(v.prototype, {
+        //math
+        ["+"](other) {
+            return this.valueOf() + other.valueOf();
+        },
+        ["-"](other) {
+            return this.valueOf() - other.valueOf();
+        },
+        ["*"](other) {
+            return this.valueOf() * other.valueOf();
+        },
+        ["/"](other) {
+            return this.valueOf() / other.valueOf();
+        },
+        ["%"](other) {
+            return this.valueOf() % other.valueOf();
+        },
+        ["**"](other) {
+            return this.valueOf() ** other.valueOf();
+        },
+        //bitwise
+        ["&"](other) {
+            return this.valueOf() & other.valueOf();
+        },
+        ["|"](other) {
+            return this.valueOf() | other.valueOf();
+        },
+        ["^"](other) {
+            return this.valueOf() ^ other.valueOf();
+        },
+        ["<<"](other) {
+            return this.valueOf() << other.valueOf();
+        },
+        [">>"](other) {
+            return this.valueOf() >> other.valueOf();
+        },
+        [">>>"](other) {
+            return this.valueOf() >>> other.valueOf();
+        },
+        ["~"]() {
+            return ~this.valueOf();
+        },
+        //logic
+        ["&&"](other) {
+            return this.valueOf() && other.valueOf();
+        },       
+        ["||"](other) {
+            return this.valueOf() || other.valueOf();
+        },
+        ["!"]() {
+            return !this.valueOf();
+        },
+        //comparision
+        ["=="](other) {
+            return this.valueOf() == other.valueOf();
+        },
+        ["==="](other) {
+            return this.valueOf() === other.valueOf();
+        },
+        ["!="](other) {
+            return this.valueOf() != other.valueOf();
+        },
+        ["!=="](other) {
+            return this.valueOf() !== other.valueOf();
+        },
+        ["<"](other) {
+            return this.valueOf() < other.valueOf();
+        },
+        [">"](other) {
+            return this.valueOf() > other.valueOf();
+        },
+        ["<="](other) {
+            return this.valueOf() <= other.valueOf();
+        },
+        [">="](other) {
+            return this.valueOf() >= other.valueOf();
+        },
+        //assignment
+        ["+="](other){
+            let v = this.valueOf();
+            v += other.valueOf();
+            return v;
+        },
+        ["-="](other){
+            let v = this.valueOf();
+            v -= other.valueOf();
+            return v;
+        },
+        ["*="](other){
+            let v = this.valueOf();
+            v *= other.valueOf();
+            return v;
+        },
+        ["/="](other){
+            let v = this.valueOf();
+            v /= other.valueOf();
+            return v;
+        },
+        ["%="](other){
+            let v = this.valueOf();
+            v %= other.valueOf();
+            return v;
+        },
+        ["**="](other){
+            let v = this.valueOf();
+            v **= other.valueOf();
+            return v;
+        },
+        ["<<="](other){
+            let v = this.valueOf();
+            v <<= other.valueOf();
+            return v;
+        },
+        [">>="](other){
+            let v = this.valueOf();
+            v >>= other.valueOf();
+            return v;
+        },
+        [">>>="](other){
+            let v = this.valueOf();
+            v >>>= other.valueOf();
+            return v;
+        },
+        ["&="](other){
+            let v = this.valueOf();
+            v &= other.valueOf();
+            return v;
+        },
+        ["^="](other){
+            let v = this.valueOf();
+            v ^= other.valueOf();
+            return v;
+        },
+        ["|="](other){
+            let v = this.valueOf();
+            v |= other.valueOf();
+            return v;
+        },
+        ["&&="](other){
+            let v = this.valueOf();
+            v &&= other.valueOf();
+            return v;
+        },
+        ["||="](other){
+            let v = this.valueOf();
+            v ||= other.valueOf();
+            return v;
+        },
+        ["++"]() {
+            let v = this.valueOf();
+            v++;
+            return v;
+        },
+        ["--"]() {
+            let v = this.valueOf();
+            v--;
+            return v;
+        }
     })
 }
 
@@ -43,6 +265,7 @@ window.console = new Proxy(
     window.console,
     {
         get(t, prop) {
+            if(prop === "dir") return t.dir;
             return (...args) => {
                 const a = args.map((v) => {
                     if(v[Symbol.display]) {
@@ -424,7 +647,41 @@ window.console = new Proxy(
     const macroParser = acorn.Parser.extend(Macros);
 
     const GENERATOR = Object.assign({}, astring.GENERATOR, {
-        MacroInvocation: function (node, state) {
+        UpdateExpression(node, state) {
+            if(!Object.overloadables.includes(node.operator)) {
+                userOG(node, state);
+                return;
+            }
+            useSelf(node.argument, state)
+            state.write("=(");
+                useSelf(node.argument, state)
+                state.write(`)["${node.operator}"]()`
+            );
+        },
+        BinaryExpression(node, state) {
+            if(!Object.overloadables.includes(node.operator)) {
+                useOG(node, state);
+                return;
+            }
+            state.write("(");
+                useSelf(node.left, state);
+                state.write(`)["${node.operator}"](`);
+                useSelf(node.right, state);
+                state.write(")");
+        },
+        AssignmentExpression(node, state) {
+            if(!Object.overloadables.includes(node.operator)) {
+                useOG(node, state);
+                return;
+            }
+            useSelf(node.left, state);
+            state.write("=(");
+                useSelf(node.left, state);
+                state.write(`)["${node.operator}"](`);
+                useSelf(node.right, state);
+                state.write(")");
+        },
+        MacroInvocation(node, state) {
             const ast = macroParser.parse(node.rawCode, {
                 ecmaVersion: "latest",
                 allowAwaitOutsideFunction: true,
@@ -436,8 +693,23 @@ window.console = new Proxy(
                 code.trim().endsWith(";") ? code.trim().slice(0, -1) : code.trim()
             );
         },
+        UnaryExpression(node, state) {
+            const op = node.operator;
+            if(op === "+" || op === "-" || !Object.overloadables.includes(op)) {
+                useOG(node, state);
+                return;
+            }
+            state.write("(");
+                useSelf(node.argument, state);
+                state.write(`)["${op}"]()`);
+        }
     });
-
+    function useSelf(node, state) {
+        GENERATOR[node.type](node, state);
+    }
+    function useOG(node, state) {
+        astring.GENERATOR[node.type].call(GENERATOR, node, state);
+    }
     function compile(str) {
         if (str === '{"message":"Asset does not exist"}') {
             throw new Error("asset does not exist");
@@ -445,7 +717,6 @@ window.console = new Proxy(
         const ast = macroParser.parse(str, {
             ecmaVersion: "latest",
         });
-
         const code = astring.generate(ast, {
             generator: GENERATOR,
         });

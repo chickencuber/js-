@@ -1,74 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/astring@latest/dist/astring.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.0/acorn.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/chickencuber/jsquery@latest/jsquery.js"></script>
-
-    <script src="https://chickencuber.github.io/js-/language.js"></script>
-    <meta charset="utf-8" />
-  </head>
-  <body>
-      <main></main>
-    <script type="js++">
-        //this is the code that it is running
-        alias! fn = function;
-        macro! normal_macro() {
-            console.log("hi")
-        }
-
-        @proc!
-        fn proc_macro(token) {
-            return `console.log(${token.raw})`
-        }
-
-        proc_macro!("hello");
-
-
-        normal_macro!();
-
-        fn foo(t) {
-            return (...args) => {
-                console.log("foo");
-                return t(...args);
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/astring@latest/dist/astring.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.0/acorn.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/chickencuber/jsquery@latest/jsquery.js"></script>
+        <script src="https://chickencuber.github.io/js-/language.js"></script>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <main></main>
+        <script type="js++">
+            //this is the code that it is running
+            alias! fn = function;
+            class Num {
+                constructor(value) {
+                    this.value = value;
+                }
+                [Symbol.display]() {
+                    return this.value;
+                }
+                ["+"](other) {
+                    return new Num(this.value + other.value);
+                }
             }
-        }
-        fn bar(t) {
-            return (...args) => {
-                console.log("bar");
-                return t(...args);
+            macro! normal_macro() {
+                console.log("hi")
             }
-        }
-        fn calling(t) {
-            return (...args) => {
-                console.log(`calling function`);
-                return t(...args);
+
+            @proc!
+            fn proc_macro(token) {
+                return `console.log(${token.raw})`
             }
-        }
-        @(foo, bar, calling)
-        fn add(p) {
-            *p++;
-        }
-        let h = 0;
-        console.log(h);
-        add(&h);
-        console.log(h);
-        add(&h);
-        console.log(h);
-        add(&h);
-        console.log(h);
-        add(&h);
-        console.log(h);
-        add(&h);
-        console.log(h);
-        (async () => {
-            const v = await fetch("./index.html");
-            const t = await v.text();
-            $.body().child($.create("div").text(t).css({
-                "white-space": "pre"
-            }));
-        })()
-    </script>
-  </body>
+
+            proc_macro!("hello");
+
+
+            normal_macro!();
+
+            fn foo(t) {
+                return (...args) => {
+                    console.log("foo");
+                    return t(...args);
+                }
+            }
+            fn bar(t) {
+                return (...args) => {
+                    console.log("bar");
+                    return t(...args);
+                }
+            }
+            fn calling(t) {
+                return (...args) => {
+                    console.log(`calling function`);
+                    return t(...args);
+                }
+            }
+            @(foo, bar, calling)
+            fn add(p) {
+                *p++;
+            }
+            @calling
+            fn sub(p) {
+                *p--;
+            }
+            let h = 0;
+            console.log(h);
+            add(&h);
+            console.log(h);
+            add(&h);
+            console.log(h);
+            add(&h);
+            console.log(h);
+            add(&h);
+            console.log(h);
+            add(&h);
+            console.log(h);
+            sub(&h);
+            console.log(h);
+            const a = new Num(1);
+            const b = new Num(4);
+            console.log(a+b);
+            (async () => {
+                const v = await fetch("./index.html");
+                const t = await v.text();
+                $.body().child($.create("div").text(t).css({
+                    "white-space": "pre"
+                }));
+            })()
+        </script>
+    </body>
 </html>
 

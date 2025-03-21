@@ -75,4 +75,4 @@ console.log(a+b);
     $.body().child($.create("div").text(t).css({
         "white-space": "pre"
     }));
- })()
+ })();

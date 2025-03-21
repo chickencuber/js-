@@ -433,9 +433,47 @@ window.console = new Proxy(
                         node.rawCode = `var ${fname} = ${dname}(${fnraw}, "function");`;
                         return this.finishNode(node, "MacroInvocation");
                     }
+                    case "MethodDefinition": {
+                        if(type.kind !== "method") {
+                            this.raise(this.pos, 'decorators can not be put on setters or getters');
+                        }
+                        const computed = type.computed;
+                        const name = astring.generate(type.key, {
+                            generator: GENERATOR,
+                        });
+                        let fn = astring.generate(type.value, {
+                            generator: GENERATOR
+                        });
+                        fn = fn.trim().endsWith(";")
+                        ? fn.trim().slice(0, -1)
+                        : fn.trim();
+                        const node = this.startNode();
+                        node.rawCode = `${computed? '[': ''}${name}${computed? ']': ''}=(function() {
+                            return ${dname}((${fn}).bind(this), "function");
+                        }).call(this)`
+                        return this.finishNode(node, "MacroInvocation");
+                    }
                     default:
                         this.raise(this.pos, `unexpected type "${type.type}"`)
                 }
+            }
+            parseClassElement(constructorAllowsSuper) {
+                if(this.type === types.decorator) {
+                    this.next();
+                    let dname;
+                    if(this.type === types.parenL) {
+                        dname = "__multiple_decor"
+                    } else {
+                        dname = this.parseExprAtom().name;
+                    }
+                    if(this.type === types.parenL) {
+                        dname += `(${this.parseMacroArgs().join(", ")})`;
+                    }
+                    const type = this.parseClassElement(constructorAllowsSuper);
+                    return this.parseDecorator(dname, type);
+                }
+
+                return super.parseClassElement(constructorAllowsSuper);
             }
             parseProc(type) {
                 if(type.type !== "FunctionDeclaration") {

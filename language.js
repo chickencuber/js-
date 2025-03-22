@@ -36,54 +36,6 @@ Object.addAll = function(obj, values) {
     } 
 }
 
-Object.overloadables = [
-    //math
-    "+",
-    "-",
-    "*",
-    "/",
-    "%",
-    "**",
-    //bitwise
-    "&",
-    "|",
-    "^",
-    "<<",
-    ">>",
-    ">>>",
-    "~",
-    //logic
-    "&&",
-    "||",
-    "!",
-    //comparision
-    "==",
-    "===",
-    "!=",
-    "!==",
-    "<",
-    ">",
-    "<=",
-    ">=",
-    //assignment
-    "+=",
-    "-=",
-    "*=",
-    "/=",
-    "%=",
-    "**=",
-    "<<=",
-    ">>=",
-    ">>>=",
-    "&=",
-    "^=",
-    "|=",
-    "&&=",
-    "||=",
-    "++",
-    "--",
-];
-
 for(const v of [
     String,
     Number,
@@ -285,6 +237,54 @@ window.console = new Proxy(
     //language
     const macros = new Map();
     const alias = new Map();
+
+    const overloadables = [
+        //math
+        "+",
+        "-",
+        "*",
+        "/",
+        "%",
+        "**",
+        //bitwise
+        "&",
+        "|",
+        "^",
+        "<<",
+        ">>",
+        ">>>",
+        "~",
+        //logic
+        "&&",
+        "||",
+        "!",
+        //comparision
+        "==",
+        "===",
+        "!=",
+        "!==",
+        "<",
+        ">",
+        "<=",
+        ">=",
+        //assignment
+        "+=",
+        "-=",
+        "*=",
+        "/=",
+        "%=",
+        "**=",
+        "<<=",
+        ">>=",
+        ">>>=",
+        "&=",
+        "^=",
+        "|=",
+        "&&=",
+        "||=",
+        "++",
+        "--",
+    ]
 
     const types = acorn.tokTypes;
     types.alias = (() => {
@@ -686,7 +686,7 @@ window.console = new Proxy(
 
     const GENERATOR = Object.assign({}, astring.GENERATOR, {
         UpdateExpression(node, state) {
-            if(!Object.overloadables.includes(node.operator)) {
+            if(!overloadables.includes(node.operator)) {
                 useOG(node, state);
                 return;
             }
@@ -697,7 +697,7 @@ window.console = new Proxy(
             );
         },
         BinaryExpression(node, state) {
-            if(!Object.overloadables.includes(node.operator)) {
+            if(!overloadables.includes(node.operator)) {
                 useOG(node, state);
                 return;
             }
@@ -708,7 +708,7 @@ window.console = new Proxy(
                 state.write(")");
         },
         AssignmentExpression(node, state) {
-            if(!Object.overloadables.includes(node.operator)) {
+            if(!overloadables.includes(node.operator)) {
                 useOG(node, state);
                 return;
             }
@@ -733,7 +733,7 @@ window.console = new Proxy(
         },
         UnaryExpression(node, state) {
             const op = node.operator;
-            if(op === "+" || op === "-" || !Object.overloadables.includes(op)) {
+            if(op === "+" || op === "-" || !overloadables.includes(op)) {
                 useOG(node, state);
                 return;
             }

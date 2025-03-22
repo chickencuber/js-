@@ -687,7 +687,7 @@ window.console = new Proxy(
     const GENERATOR = Object.assign({}, astring.GENERATOR, {
         UpdateExpression(node, state) {
             if(!Object.overloadables.includes(node.operator)) {
-                userOG(node, state);
+                useOG(node, state);
                 return;
             }
             useSelf(node.argument, state)

@@ -202,6 +202,10 @@ for(const v of [
     })
 }
 
+String.prototype["*"] = function(other) {
+    return this.repeat(other);
+}
+
 function __multiple_decor(...decorators) {
     return (t, type) => {
         decorators.forEach(v => {

@@ -1,7 +1,7 @@
 # JS++
 a language that transpiles to js
 
-will make a better version that transpiles aot
+it is recomented to use the transpiler from this [github](https://github.com/chickencuber/jspp-transpile)
 
 ## features
 1. macros

@@ -1,7 +1,6 @@
 # JS++
-a language that transpiles to js
-
-it is recomented to use the transpiler from this [github](https://github.com/chickencuber/jspp-transpile)
+a language that transpiles to js  
+**this wont be update anymore use [this](https://github.com/chickencuber/jspp-transpile) instead**
 
 ## features
 1. macros
